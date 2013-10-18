@@ -1,0 +1,60 @@
+Highlight JavaScript according to function scope        *JSContextColor*
+
+  * .   _______*______ .  *   .   __   .   *    __  ______  .   __   * .   .
+.      / / ___// ____/___  ____  / /____  _  __/ /_/ ____/___  / /___  _____
+  _ * / /\__ \/ /   / __ \/ __ \/ __/ _ \| |/_/ __/ /   / __ \/ / __ \/ ___/
+ / /_/ /___/ / /___/ /_/ / / / / /_/  __/>  </ /_/ /___/ /_/ / / /_/ / /  * 
+ \____//____/\____/\____/_/ /_/\__/\___/_/|_|\__/\____/\____/_/\____/_/_/ .   
+      *           .              *     .               .          *       . 
+    .      *               .               .    *   David Wilhelm <dewilhelm@gmail.com>
+
+==============================================================================
+Commands
+
+                                                        *:JSContextColor*
+:JSContextColor        	     Colorize current buffer
+
+                                                        *:JSContextColorToggle*
+:JSContextColorToggle        Toggle whether the plugin is enabled
+
+                                                        *:JSContextColorUpdate*
+:JSContextColorUpdate        Update the color highlighting
+
+==============================================================================
+Options
+
+                                                *g:js_context_colors_enabled*
+
+Whether highlighting is done automatically when .js files are loaded/changed.
+>
+        let g:js_context_colors_enabled = 0
+<
+
+Note that commands above still work even when this is set to 0.
+
+                                                *g:js_context_colors*
+
+A list of colors to use for nested scope levels in JavaScript code, eg:
+
+>
+	let g:js_context_colors = [ 252, 10, 11, 172, 1, 161, 63 ]
+<
+
+                                                *g:js_context_colors_usemaps*
+
+Disables maps (see below) when set to 0:
+
+>
+	let g:js_context_colors_usemaps = 0
+<
+
+==============================================================================
+Mapping
+
+By default, <localleader>h is mapped to the JSContextColor command.
+By default, <localleader>t is mapped to the JSContextColorToggle command.
+
+These can be changed by setting your own maps to the commands. This will
+remove the above mappings.
+
+ vim:tw=78:sw=8:ts=8:sts=8:noet:ft=help:norl:

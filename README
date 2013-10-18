@@ -1,0 +1,11 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=4748
+
+This is a plugin for the Vim text editor to highlight JavaScript code 
+according to its scope. This was inspired by an idea by Douglas Crockford
+in his presentation (http://www.youtube.com/watch?v=dkZFtimgAcM) at YUIConf 2012.
+(See from around the 16 minute mark onwards.) 
+
+The GitHub repo will always have latest version:
+
+https://github.com/bigfish/vim-js-context-coloring
+
