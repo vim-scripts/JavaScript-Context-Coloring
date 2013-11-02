@@ -35,11 +35,13 @@ your choice. Here is a summary of the commands available:
 
 ##Requirements
 
-The plugin relies on [NodeJS](http://nodejs.org/) being installed, preferably > 0.10.
+* The plugin relies on [NodeJS](http://nodejs.org/) being installed, preferably > 0.10.
 
-The command line script which runs jslint in Node to obtain the coloring data 
+* UNIX-like environment. The command line script which runs jslint in Node to obtain the coloring data 
 requires a Unix-like environment to work. This means it's probably not going to work
 on Windows, unless inside Cygwin or something like that. 
+
+* Vim version: 7.4 recommended, however it also works now on 7.3. Untested on earlier versions. 
 
 ##Installation
 
@@ -58,6 +60,23 @@ on Windows, unless inside Cygwin or something like that.
 3. Install docs (in Vim):
 
     :Helptags
+
+### Using NeoBundle.
+
+0. Install [NeoBundle](https://github.com/Shougo/neobundle.vim#quick-start)
+
+1. Add the following to your `vimrc`:
+
+```VimL
+NeoBundle 'bigfish/vim-js-context-coloring', {
+  \ 'build' : {
+  \     'mac' : 'npm install --update',
+  \     'unix' : 'npm install --update',
+  \    },
+  \ }
+```
+
+2. Close & re-open Vim.
 
 ##Configuration
 

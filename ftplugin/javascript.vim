@@ -1,12 +1,12 @@
 "plugin to add javascript scope-coloring
-"Version: 0.0.3
+"Version: 0.0.4
 "Author: David Wilhelm <dewilhelm@gmail.com>
 "
 "Note: highlights function scopes in JavaScript
 "only supports terminal colors at this time	
 "use XtermColorTable plugin to see what colors are available
 
-let s:jscc = expand('<sfile>:p:h').'/../../bin/jscc-cli'
+let s:jscc = expand('<sfile>:p:h').'/../bin/jscc-cli'
 
 if !exists('g:js_context_colors')
 	let g:js_context_colors = [ 252, 10, 11, 172, 1, 161, 63 ]
@@ -31,6 +31,8 @@ else
 		highlight JSCC_CommentHigroup ctermfg=243
 		let s:comment_higroup = 'JSCC_CommentHigroup'
 endif
+
+let s:my_changedtick = b:changedtick
 
 "define highlight groups dynamically
 function! JSCC_DefineHighlightGroups()
@@ -217,19 +219,42 @@ function! JSCC_Colorize()
 			echom "unexpected output from eslevels:" . string(colordata_result)
 		endif
 	catch
-		echom "JSContextColors: Error occurred during parsing. Check your syntax."
+		echom "JSContextColors: Error occurred during parsing."
 	endtry
 
 	call setpos('.', save_cursor)
 endfunction
 
+function! JSCC_UpdateOnChange()
+	if s:my_changedtick != b:changedtick
+		let s:my_changedtick = b:changedtick
+		call JSCC_Colorize()
+	endif
+endfunction
+
 function! JSCC_Enable()
-	augroup JSContextColorAug
-		au!
-		au! TextChangedI,TextChanged *.js :JSContextColor
-	augroup END
+	"if < vim 7.4 TextChanged,TextChangedI events are not
+	"available and will result in error E216
+	try
+
+		augroup JSContextColorAug
+			au!
+			au! TextChangedI,TextChanged <buffer> :JSContextColor
+		augroup END
+
+	catch /^Vim\%((\a\+)\)\=:E216/
+
+		"use different events to trigger update in Vim < 7.4
+		augroup JSContextColorAug
+			au!
+			au! InsertLeave <buffer> :JSContextColor
+			au! CursorMoved <buffer> call JSCC_UpdateOnChange()
+		augroup END
+
+	endtry
+
 	:JSContextColor
-	"echo 'JSContextColor enabled'
+
 endfunction
 
 function! JSCC_Disable()
