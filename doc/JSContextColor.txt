@@ -21,8 +21,26 @@ Commands
 :JSContextColorUpdate        Update the color highlighting
 
 ==============================================================================
-Options
 
+
+Customizing Colors
+
+
+To do this, copy the 'jscc_colors.vim' colorscheme file from the plugin's /colors
+ directory, to your VIMRUNTIME/colors directory (create if necessary). Make
+sure the name is still the same. Then you can make modifications to the highlight
+ groups in the file as you wish. see ':help highlight-args' or look at other 
+colorschemes for guidance. The XtermColorTable plugin is also helpful for seeing
+ the available colors and their codes.
+
+The special syntax group 'JSCC_UndeclaredGlobal' targets undeclared global
+variables, in order to distinguish them from global variables which were
+declared in the current file. If you don't want to distinguish these, just set
+this group to the same highlighting as JSCC_Level_0.
+
+If you change the colors, you need to call :JSContextColorUpdate
+
+Options
                                                 *g:js_context_colors_enabled*
 
 Whether highlighting is done automatically when .js files are loaded/changed.
@@ -31,88 +49,38 @@ Whether highlighting is done automatically when .js files are loaded/changed.
 <
 
 Note that commands above still work even when this is set to 0. If you enable
-the *g:js_context_colors_usemaps* option below, you can trigger them more easily.
+the `g:js_context_colors_usemaps` option below, you can trigger them more easily.
 
-                                                *g:js_context_colors*
+                                                *g:js_context_colors_fold*
 
-A list of custom colors to use for nested scope levels in JavaScript code, eg:
-
+Whether folding on javascript scopes (functions) is enabled. This is enabled
+by default. To disable:
 >
-	let g:js_context_colors = [ 252, 10, 11, 172, 1, 161, 63 ]
+        let g:js_context_colors_fold = 0
+<
 
-Colors may be numbers (for terminal colors) or strings which define hexadecimal colors (for the GUI) 
-defined as '#rrggbb' where rr, gg, bb are the red, green, and blue values in hexadecimal. The plugin
-will translate terminal colors to hex when the gui is found to be running. You may also use color names
-such as: 'Red', 'Green', 'Cyan', 'Magenta', 'Blue' and others, see `:h ctermfg' for more. The GUI may
-support additional color names, eg. 'Violet', which will work in GUI but not in the terminal. Both hex
-colors and color names are case-insensitive. You may combine color numbers and names in the same list.
+                                                *g:js_context_colors_foldlevel*
 
-You may also specify a color as a dictionary with the following keys: ctermfg, ctermbg, guifg, guibg. These
-take the same values as described above, except that hex colors may not be given for cterm options, and
-terminal color numbers may *not* be given for the gui options. You do not have to specify all the options,
-if not specified they will be set to the default values. So if you wanted to, you could specify a background
-of green for the second scope as follows:
+The level where folds will be closed by default. Default is 9. To change:
+>
+        let g:js_context_colors_foldlevel = 2
 
-	let g:js_context_colors = [ 252, { 'ctermbg': 'green', 'guibg': 'green'}, 11, 172, 1, 161, 63 ]
+This will auto-fold functions 2 levels deep.
 
-The first color is the first level (global), the second is level 2 (top level
-functions), the third is functions inside top-level functions...etc. 
-
-NB: Ensure that your terminal supports 256 colors before using colors
-outside the default 16 terminal colors (0 - 15). Eg. these are the defaults
-on Ubuntu (Xterm):
-
-0:black, 1:red, 2:green, 3:yellow, 4:blue, 5:magenta, 6:cyan, 7:light gray
-
-The colors 8-15 are 'bold' versions of the above:
-
-8:dark gray, 9:bright red, 10:bright green, 11: bright yellow, 12: bright blue,
-13: bright magenta, 14:bright cyan, 15:white
-
-See the XtermColorTable plugin to see the 256 color range.
-
-The default colors are 1:white, 2:green, 3: yellow 4:blue, 5:red, 6:cyan, 7:grey. You may add 
-additional levels if you wish. 
-
-                                                *g:js_context_colors_debug*
-
-If set to 1, this enables debug output. 
 
 
                                                 *g:js_context_colors_colorize_comments*
 
-Whether to colorize comments according to the scope color -- default is true.
-If you want this disable behaviour, set the option to 0:
+Whether to colorize comments according to the scope color -- default is false.
+
+If you want this enable this behaviour, set the option to 1:
 
 >
-	let g:js_context_colors_colorize_comments = 0
+	let g:js_context_colors_colorize_comments = 1
 
-This will attempt to re-highlight comments as the comment higroup (see next
-section). However it is a bit buggy -- if comments contain start comment
-tokens (// or /*) it will get confused and also slow down rendering. Therefore
-it is not recommended to disable this option, and it may be removed in the
-future.
+This will highlight comments as the comment higroup (see next section). 
 
-<
 
-                                                *g:js_context_colors_comment_higroup*
-
-A highlight group to use for comments (default is grey)
-
->
-	highlight MyComment ctermfg=red
-
-	let g:js_context_colors_comment_higroup = 'MyComment'
-<
-
-Or to use the comment syntax highlighting from your colorscheme:
-
->
-	let g:js_context_colors_comment_higroup = 'Comment'
-<
-
-This will only take effect if the `g:js_context_colors_colorize_comments` option
-is not set to 1.
 
                                                 *g:js_context_colors_usemaps*
 
@@ -121,6 +89,52 @@ Disables maps (see below) when set to 0:
 >
 	let g:js_context_colors_usemaps = 0
 <
+
+                                                *g:js_context_colors_show_error_message*
+
+When the plugin fails to get a valid response from the parser script, it
+will show an error... it will also not highlight. This is most likely a syntax error,
+but it could also be a problem with the CLI script (perhaps it was not installed).
+To stop annoying users, however it is now suppressed by default.
+
+But for debugging, it can be re-enabled with this option:
+
+>
+	let g:js_context_colors_show_error_message = 1
+<
+
+                                                *g:js_context_colors_debug*
+
+If set to 1, this enables verbose debug output, eg. highlighting data is
+displayed.
+
+                                                *g:js_context_colors_block_scope*
+
+Highlight blocks as scope levels. Only really makes sense for ES6 code, but
+this will also affect ES5 code, so be aware of that. It will be ignored if
+the g:js_context_colors_es5 option is set (see below).
+
+                                                *g:js_context_colors_block_scope_with_let*
+
+Highlight blocks as scope levels, only if a 'let' variable was included in it.
+This allows smarter highlighting across ES5 and ES6, as only ES6 code will
+have let variables.
+
+                                                *g:js_context_colors_highlight_function_names*
+
+Highlight declared function names with the parent scope level color, to
+indicate that the name was exported to the container scope. Set to 1 to
+enable.
+
+                                                *g:js_context_colors_jsx*
+
+Tolerates React/JSX syntax. This is off by default, set to 1 to enable.  If the file extension
+is .jsx this will be automatically turned on.
+                                                *g:js_context_colors_es5*
+
+Only support ES5 syntax. By default the plugin will now highlight ES6 syntax as well as
+ES5/ES3. This switches to the older CLI backend.
+>
 
 ==============================================================================
 Mapping
